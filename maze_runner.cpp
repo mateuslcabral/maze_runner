@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stack>
+
 //verificar se a posição esta dentro da matriz antes de testar as posições e depois so ir chamando o walk novamente 
 // Matriz de char representando o labirinto
 char** maze; 
@@ -56,10 +57,11 @@ void print_maze() {
 // Função responsável pela navegação.
 // Recebe como entrada a posição inicial e retorna um booleando indicando se a saída foi encontrada
 bool walk(pos_t pos) {
+        valid_positions.push(pos);
     while (!valid_positions.empty()) {
-        pos = valid_positions.top();
+        pos_t posAtual = valid_positions.top();
         valid_positions.pop();
-        maze[pos.i][pos.j] = '.';
+        maze[pos.i][pos.j] = 'o';
         // Limpa a tela - pode não funcionar em todos os sistemas operacionais
         system("clear");
         print_maze();
@@ -67,32 +69,41 @@ bool walk(pos_t pos) {
         if (maze[pos.i][pos.j] == 's') {
             return true;
         }else{
-
-        if (pos.i > 0 && maze[pos.i - 1][pos.j] != 'x') {
+            //verifica posição a direita 
+            if (pos.i > 0 && maze[pos.i - 1][pos.j] == 'x') {
             valid_positions.push({pos.i - 1, pos.j});
-        }
-        if (pos.i < num_rows - 1 && maze[pos.i + 1][pos.j] != 'x') {
+            maze[pos.i][pos.j] == '.';
+        } 
+            //Verifica a posição à esquerda 
+            if (pos.i < num_rows - 1 && maze[pos.i + 1][pos.j] == 'x') {
             valid_positions.push({pos.i + 1, pos.j});
+            maze[pos.i][pos.j] == '.';
         }
-        if (pos.j > 0 && maze[pos.i][pos.j - 1] != 'x') {
+            //Verifica a posição abaixo 
+            if (pos.j > 0 && maze[pos.i][pos.j - 1] == 'x') {
             valid_positions.push({pos.i, pos.j - 1});
-        }
-        if (pos.j < num_cols - 1 && maze[pos.i][pos.j + 1] != 'x') {
+            maze[pos.i][pos.j] == '.';
+        }   
+            // Verifica a posição acima 
+            if (pos.j < num_cols - 1 && maze[pos.i][pos.j + 1] == 'x') {
             valid_positions.push({pos.i, pos.j + 1});
         }
+
+
+            
+        
 		}
     }
+    
     return false;
 }
 
 int main(int argc, char* argv[]) {
 
 	const char* name ="/workspaces/maze_runner/data/maze.txt";
-    // carregar o labirinto com o nome do arquivo recebido como argumento
     pos_t initial_pos = load_maze(name);
 	print_maze();
-    // chamar a função de navegação
-    //bool exit_found = walk(initial_pos);
+    bool exit_found = walk(initial_pos);
 
     // Tratar o retorno (imprimir mensagem)
     /*if (exit_found) {
